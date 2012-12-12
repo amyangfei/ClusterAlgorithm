@@ -39,7 +39,7 @@ from process import processtool
 backgroundHeight = 500
 multiplyBy = [17, 18]
 pointSize = [3, 1]
-colors=['RED','PINK','PURPLE','YELLOW','GREEN','CYAN','NAVY','BLUE','LIGHT MAGENTA','TURQUOISE','PINK','PURPLE','YELLOW','GREEN','CYAN','NAVY','BLUE','BLACK']
+colors=['RED','PINK','PURPLE','YELLOW','GREEN','CYAN','NAVY','BLUE','LIGHT MAGENTA','TURQUOISE','PINK','PURPLE','YELLOW','GREEN','CYAN','NAVY','BLUE','LIGHT MAGENTA','TURQUOISE','BLACK']
 
 class AnchorsDemoFrame(wx.Frame):
     
@@ -84,39 +84,39 @@ class AnchorsDemoFrame(wx.Frame):
                                 style=wx.SIMPLE_BORDER | wx.CLIP_CHILDREN, 
                                 pos = (8, 40)
                                 )
-        
+
         self.backgroundPanel.SetBackgroundColour(wx.Colour(255, 255, 255))
         self.backgroundPanel.SetConstraints(
             anchors.LayoutAnchors(self.backgroundPanel, True, True, True, True)
             )
 
         drawbutton = wx.Button(parent=self.mainPanel, size=(80, 22), label="Cluster", id=ID_ANCHORSDEMOFRAMEDRAWBUTTON)
-        drawbutton.SetPosition((430, 8))
+        drawbutton.SetPosition((420, 10))
         self.Bind(
             wx.EVT_BUTTON, self.OnDrawButton, id=ID_ANCHORSDEMOFRAMEDRAWBUTTON
             )        
         
-        lastbutton = wx.Button(parent=self.mainPanel, size=(90, 22), label="Last Result", id=ID_ANCHORSDEMOFRAMELASTBUTTON)
-        lastbutton.SetPosition((520, 8))
+        lastbutton = wx.Button(parent=self.mainPanel, size=(80, 22), label="Last Result", id=ID_ANCHORSDEMOFRAMELASTBUTTON)
+        lastbutton.SetPosition((510, 10))
         self.Bind(
             wx.EVT_BUTTON, self.OnLastButton, id=ID_ANCHORSDEMOFRAMELASTBUTTON
             )
         
-        drawbutton2 = wx.Button(parent=self.mainPanel, size=(110, 22), label="Show Iteration", id=ID_ANCHORSDEMOFRAMEDRAWBUTTON2)
-        drawbutton2.SetPosition((620, 8))
+        drawbutton2 = wx.Button(parent=self.mainPanel, size=(120, 22), label="Show Iteration", id=ID_ANCHORSDEMOFRAMEDRAWBUTTON2)
+        drawbutton2.SetPosition((600, 10))
         self.Bind(
             wx.EVT_BUTTON, self.OnShowButton, id=ID_ANCHORSDEMOFRAMEDRAWBUTTON2
             )
         
         backButton = wx.Button(parent=self.mainPanel, size=(80, 22), label="Back Step", id=ID_ANCHORSDEMOFRAMEBACKBUTTON)
-        backButton.SetPosition((740, 8))
+        backButton.SetPosition((730, 10))
 
         self.Bind(
             wx.EVT_BUTTON, self.OnBackButton, id=ID_ANCHORSDEMOFRAMEBACKBUTTON
             )
         
         clearButton = wx.Button(parent=self.mainPanel, size=(50, 22), label="Clear", id=ID_ANCHORSDEMOFRAMECLEARBUTTON)
-        clearButton.SetPosition((835, 8))
+        clearButton.SetPosition((830, 10))
 
         self.Bind(
             wx.EVT_BUTTON, self.OnclearButton, id=ID_ANCHORSDEMOFRAMECLEARBUTTON
@@ -129,19 +129,20 @@ class AnchorsDemoFrame(wx.Frame):
                                 id=ID_ANCHORSDEMOFRAMEHELPSTATICTEXT, 
                                 parent=self.mainPanel, name='helpStaticText', 
                                 size=(600, 60), style=wx.ST_NO_AUTORESIZE, 
-                                pos=(18, 534)
+                                pos=(8, 534)
                                 )
-        self.helpStaticText.SetFont(wx.Font(14, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Courier New'))
+        self.helpStaticText.SetFont(wx.Font(11, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, 'Courier New'))
 
         self.helpStaticText2 = wx.StaticText(
                                         label='Iteration times : not defined\nNow: havn\'t started', 
                                         id=ID_ANCHORSDEMOFRAMEHELPSTATICTEXT2, 
                                         parent=self.mainPanel, name='helpStaticText2', 
                                         size=(285, 60), style=wx.ST_NO_AUTORESIZE, 
-                                        pos=(640, 534)
+                                        pos=(610, 534)
                                         )
-        self.helpStaticText2.SetFont(wx.Font(14, wx.DECORATIVE, wx.ITALIC, wx.BOLD, False))
+        self.helpStaticText2.SetFont(wx.Font(11, wx.DECORATIVE, wx.ITALIC, wx.BOLD, False))
         self.helpStaticText2.SetForegroundColour('RED')
+        
         #self.Bind(wx.EVT_SIZE, self.ReDrawDots)
 
     def fbbhCallback(self, evt):
@@ -161,6 +162,10 @@ class AnchorsDemoFrame(wx.Frame):
         self.clusterType = 'kmeans' if event.GetInt()==0 else 'dbscan'
         
     def ReDrawDots(self, event):
+        #self.Update()
+        
+        #self.backgroundPanel.SetBackgroundColour(wx.Colour(255,255,255))
+        #self.backgroundPanel.Update()
         self.Update()
         time.sleep(0.01)
         if len(self.lastpoints) <= 0:
@@ -170,6 +175,7 @@ class AnchorsDemoFrame(wx.Frame):
         dc.SetBrush(wx.Brush("RED"))
         for point in self.lastpoints:
             colortype = point.type if point.type != cluster.DBSCAN_NOISETYPE else -1
+            #dc.SetPen(wx.Pen(colors[colortype], 1))
             if self.datafileMultiplyIndex == 1:
                 colortype = point.type if point.type<=11 else -1
                 dc.SetPen(wx.Pen(colors[colortype]))
@@ -192,6 +198,7 @@ class AnchorsDemoFrame(wx.Frame):
                                 'progress, only KMEANS is supported with iteration demonstrating!',
                                'We feel Sorry for it',
                                wx.OK | wx.ICON_INFORMATION
+                               #wx.YES_NO | wx.NO_DEFAULT | wx.CANCEL | wx.ICON_INFORMATION
                                )
             dlg.ShowModal()
             dlg.Destroy()
@@ -241,7 +248,26 @@ class AnchorsDemoFrame(wx.Frame):
         progress = progressThread()
         progress.start() 
         handle = handleThread(self, progress)
-        handle.start()
+        handle.start()        
+        '''
+        self.lastpoints = processtool.generate_clusteredpoints(self.dataFilePath, self.clusterType, self.datafileMultiplyIndex, self.iterationRecords) 
+            
+        dc = wx.ClientDC(self.backgroundPanel)
+        dc.SetPen(wx.Pen("RED"))
+        dc.SetBrush(wx.Brush("RED"))
+        for point in self.lastpoints:
+            colortype = point.type if point.type != cluster.DBSCAN_NOISETYPE else -1
+            if self.datafileMultiplyIndex == 1:
+                colortype = point.type if point.type<=9 else -1
+                dc.SetPen(wx.Pen(colors[colortype]))
+            dc.SetBrush(wx.Brush(colors[colortype]))
+            dc.DrawCircle(point.coordinates[0]*multiplyBy[self.datafileMultiplyIndex], \
+                          backgroundHeight-point.coordinates[1]*multiplyBy[self.datafileMultiplyIndex], pointSize[self.datafileMultiplyIndex])
+        
+        self.iterationNum = -1
+        self.helpStaticText2.SetLabelText('Iteration times : '+str(len(self.iterationRecords)-1)+'\nNow: '+str(len(self.iterationRecords)-1))
+        '''
+        #progress.Destroy()
 
 class handleThread(Thread):
     def __init__(self, auiframe, ano_thread):
